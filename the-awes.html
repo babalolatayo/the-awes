@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Awes Treasury</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#f5f7fa;--bg2:#ffffff;--bg3:#eef1f6;--border:#d8dde6;--border2:#c5cdd8;
+  --text:#1a202c;--text2:#4a5568;--text3:#a0aec0;
+  --accent:#7c3aed;--accent2:#6d28d9;
+  --green:#10d98a;--green-bg:rgba(16,217,138,0.10);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,0.10);
+  --red:#f04040;--red-bg:rgba(240,64,64,0.10);
+  --gold:#fbbf24;
+  --radius:12px;--radius-sm:8px;
+  --mono:'Courier New',Courier,monospace;
+  --display:system-ui,-apple-system,sans-serif;
+  --tab-h:62px;
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:16px;min-height:100vh;overscroll-behavior:none;}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#ffffff,#f0f0f8,#ffffff);border-bottom:1px solid var(--border);padding:13px 18px;position:sticky;top:0;z-index:20;}
+.header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-img{width:42px;height:42px;border-radius:8px;object-fit:contain;}
+.logo-text{font-family:var(--display);font-size:18px;font-weight:800;color:var(--text);}
+.logo-sub{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;}
+.logo-sub.tr-sub{color:var(--gold);}
+.logo-sub.mem-sub{color:#a855f7;}
+.logo-sub.sum-sub{color:var(--green);}
+.logo-sub.adm-sub{color:var(--red);}
+.live-dot{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--green);letter-spacing:0.08em;}
+.live-dot::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* PAGES */
+.page{display:none;padding-bottom:calc(var(--tab-h)+16px);}
+.page.active{display:block;}
+.main{max-width:900px;margin:0 auto;padding:16px 14px 8px;}
+
+/* TAB BAR */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;height:var(--tab-h);background:#ffffff;border-top:1px solid var(--border);display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom);}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:none;background:transparent;cursor:pointer;color:var(--text3);transition:color 0.2s;font-family:var(--mono);-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.tab-btn .tab-icon{font-size:22px;transition:transform 0.2s;}
+.tab-btn .tab-label{font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.tab-btn.active.tr-tab{color:var(--gold);}
+.tab-btn.active.mem-tab{color:#a855f7;}
+.tab-btn.active.sum-tab{color:var(--green);}
+.tab-btn.active.adm-tab{color:var(--red);}
+.tab-btn.active .tab-icon{transform:translateY(-2px);}
+
+/* SHARED */
+.section-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);margin-bottom:12px;margin-top:6px;}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;}
+.card-gold{border-color:rgba(251,191,36,0.3);background:linear-gradient(135deg,#fffdf5,#fff9e6);}
+.metric{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;position:relative;overflow:hidden;}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border2);transition:background 0.3s;}
+.metric.m-green::before{background:var(--green);}
+.metric.m-red::before{background:var(--red);}
+.metric.m-amber::before{background:var(--amber);}
+.metric.m-gold::before{background:var(--gold);}
+.metric.m-blue::before{background:var(--accent);}
+.metric-label{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:7px;}
+.metric-value{font-size:26px;font-weight:700;color:var(--text);}
+.metric-value.good{color:var(--green);}
+.metric-value.warn{color:var(--amber);}
+.metric-value.bad{color:var(--red);}
+.metric-value.gold{color:var(--gold);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;font-weight:700;}
+.field input,.field select,.field textarea{width:100%;height:48px;padding:0 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:16px;font-family:var(--mono);transition:border-color 0.15s;-webkit-appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.1);}
+.field select option{background:var(--bg2);color:var(--text);}
+.field textarea{height:70px;resize:none;padding:10px 12px;}
+.field-row{display:flex;gap:10px;}
+.field-row .field{flex:1;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;border-radius:var(--radius-sm);font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:0.05em;cursor:pointer;border:none;transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;}
+.btn-green{background:linear-gradient(135deg,var(--green),#059669);color:#000;}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(240,64,64,0.3);}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f59e0b);color:#000;}
+.btn-sm{padding:7px 14px;font-size:13px;}
+.type-row{display:flex;gap:8px;margin-bottom:12px;}
+.type-btn{flex:1;padding:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:0.05em;cursor:pointer;text-align:center;transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.type-btn.active-dep{background:var(--green-bg);border-color:rgba(16,217,138,0.4);color:var(--green);}
+.type-btn.active-wit{background:var(--red-bg);border-color:rgba(240,64,64,0.4);color:var(--red);}
+.tx-list{display:flex;flex-direction:column;gap:8px;}
+.tx-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;display:flex;align-items:center;gap:12px;}
+.tx-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tx-icon.dep{background:var(--green-bg);border:1px solid rgba(16,217,138,0.2);}
+.tx-icon.wit{background:var(--red-bg);border:1px solid rgba(240,64,64,0.2);}
+.tx-body{flex:1;min-width:0;}
+.tx-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tx-meta{font-size:13px;color:var(--text2);margin-top:3px;}
+.tx-amount{font-size:17px;font-weight:700;white-space:nowrap;}
+.tx-amount.dep{color:var(--green);}
+.tx-amount.wit{color:var(--red);}
+.tx-del{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:4px 6px;border-radius:4px;transition:color 0.15s;}
+.tx-del:hover{color:var(--red);}
+.member-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.member-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
+.member-body{flex:1;min-width:0;}
+.member-name{font-size:16px;font-weight:700;color:var(--text);}
+.member-total{font-size:13px;color:var(--text2);margin-top:3px;}
+.member-month-pill{font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;letter-spacing:0.06em;white-space:nowrap;}
+.pill-paid{background:var(--green-bg);color:var(--green);border:1px solid rgba(16,217,138,0.2);}
+.pill-pending{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,0.2);}
+.pill-overdue{background:var(--red-bg);color:var(--red);border:1px solid rgba(240,64,64,0.2);}
+.pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:100;}
+.pin-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;width:320px;text-align:center;}
+.pin-title{font-size:16px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);margin-bottom:6px;}
+.pin-sub{font-size:13px;color:var(--text2);margin-bottom:16px;}
+.pin-input{width:100%;height:52px;padding:0 14px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:24px;font-family:var(--mono);text-align:center;letter-spacing:0.3em;margin-bottom:10px;-webkit-appearance:none;}
+.pin-input:focus{outline:none;border-color:var(--gold);}
+.pin-error{color:var(--red);font-size:13px;margin-bottom:10px;min-height:18px;}
+.pin-btns{display:flex;gap:8px;}
+.bar-bg{background:var(--bg3);border-radius:999px;height:6px;overflow:hidden;margin-top:6px;}
+.bar-fill{height:100%;border-radius:999px;transition:width 0.4s;}
+.bar-green{background:var(--green);}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:0.06em;margin-left:6px;}
+.tag-contrib{background:rgba(0,212,255,0.1);color:var(--accent);}
+.tag-expense{background:var(--amber-bg);color:var(--amber);}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.filter-btn{padding:6px 14px;font-size:13px;font-weight:600;font-family:var(--mono);border:1px solid var(--border2);border-radius:999px;background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.filter-btn.active{background:var(--bg3);border-color:var(--accent);color:var(--accent);}
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);font-size:15px;}
+.edit-form{background:var(--bg2);border:1px solid var(--accent);border-radius:var(--radius-sm);padding:16px;margin-bottom:8px;}
+.edit-form .field{margin-bottom:10px;}
+.edit-btns{display:flex;gap:8px;margin-top:12px;}
+.edit-btns .btn{flex:1;}
+@media(max-width:480px){.grid-3{grid-template-columns:1fr 1fr;}.field-row{flex-direction:column;gap:0;}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-img" style="width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;font-family:system-ui;box-shadow:0 0 16px rgba(168,85,247,0.3);">A</div>
+      <div>
+        <div class="logo-text">The Awes</div>
+        <div class="logo-sub sum-sub" id="logoSub">Summary</div>
+      </div>
+    </div>
+    <div class="live-dot" id="liveBalance">£0.00</div>
+  </div>
+</div>
+
+<!-- MEMBERS PAGE -->
+<div class="page" id="page-mem">
+<div class="main">
+  <div class="section-head">Contribution Status — <span id="currentMonthLabel" style="color:var(--gold);"></span></div>
+  <div class="grid-3" id="memberStats"></div>
+  <div id="memberList"></div>
+</div>
+</div>
+
+<!-- SUMMARY PAGE -->
+<div class="page active" id="page-sum">
+<div class="main">
+  <div class="section-head">Treasury Overview</div>
+  <div class="grid-2">
+    <div class="metric m-green"><div class="metric-label">Total Balance</div><div class="metric-value good" id="sumBalance">£0.00</div></div>
+    <div class="metric m-gold"><div class="metric-label">Monthly Target</div><div class="metric-value gold" id="sumTarget">£0.00</div></div>
+  </div>
+  <div class="grid-3">
+    <div class="metric m-blue"><div class="metric-label">Total Income</div><div class="metric-value" id="sumIncome" style="color:var(--accent)">£0.00</div></div>
+    <div class="metric m-red"><div class="metric-label">Total Expenses</div><div class="metric-value bad" id="sumExpenses">£0.00</div></div>
+    <div class="metric m-amber"><div class="metric-label">Members</div><div class="metric-value warn" id="sumMembers">0</div></div>
+  </div>
+  <div class="section-head">Monthly Breakdown</div>
+  <div id="monthBreakdown"></div>
+  <div class="section-head">Top Contributors</div>
+  <div id="topContributors"></div>
+</div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-adm">
+<div class="main">
+  <div class="section-head">Add Transaction</div>
+  <div class="card card-gold">
+    <div class="type-row">
+      <button class="type-btn active-dep" id="typeDep" onclick="setType('deposit')">⬆ Deposit</button>
+      <button class="type-btn" id="typeWit" onclick="setType('withdrawal')">⬇ Withdrawal</button>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Member</label>
+        <select id="txMember"><option value="">— Select —</option></select>
+      </div>
+      <div class="field">
+        <label>Amount (£)</label>
+        <input type="number" id="txAmount" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Category</label>
+        <select id="txCategory">
+          <option value="Monthly Contribution">Monthly Contribution</option>
+          <option value="Extra Contribution">Extra Contribution</option>
+          <option value="Event Payment">Event Payment</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="txDate">
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="txNotes" placeholder="e.g. May monthly contribution…"></textarea>
+    </div>
+    <button class="btn btn-gold" onclick="addTransaction()" style="width:100%">+ Add Transaction</button>
+  </div>
+
+  <div class="section-head">Transaction History</div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('deposit',this)">Deposits</button>
+    <button class="filter-btn" onclick="setFilter('withdrawal',this)">Withdrawals</button>
+    <button class="filter-btn" onclick="setFilter('Monthly Contribution',this)">Monthly</button>
+  </div>
+  <div class="tx-list" id="txList"></div>
+
+  <div style="height:1px;background:var(--border);margin:24px 0;"></div>
+
+  <div class="section-head">Add Member</div>
+  <div class="card">
+    <div class="field-row">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="newMemberName" placeholder="e.g. John Okafor">
+      </div>
+      <div class="field">
+        <label>Role</label>
+        <select id="newMemberRole">
+          <option value="Member">Member</option>
+          <option value="Admin">Admin</option>
+          <option value="Treasurer">Treasurer</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Monthly Contribution (£)</label>
+      <input type="number" id="newMemberAmount" placeholder="e.g. 50" min="0" step="0.01" inputmode="decimal">
+    </div>
+    <button class="btn btn-primary" onclick="addMember()" style="width:100%">+ Add Member</button>
+  </div>
+  <div class="section-head">Settings</div>
+  <div class="card">
+    <div class="field">
+      <label>Change Admin PIN</label>
+      <input type="password" id="newPin" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Recovery Code (for PIN reset)</label>
+      <input type="text" id="recoveryCode" placeholder="Set a secret word or phrase">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px;">You'll need this if you forget your PIN. Keep it safe!</div>
+    </div>
+    <button class="btn btn-ghost" onclick="saveSettings()" style="width:100%">Save Settings</button>
+  </div>
+  <div class="section-head">Manage Members</div>
+  <div id="adminMemberList"></div>
+  <div class="section-head" style="margin-top:20px;">Danger Zone</div>
+  <div class="card" style="border-color:rgba(240,64,64,0.2);">
+    <button class="btn btn-red" onclick="exportCSV()" style="width:100%;margin-bottom:8px;">📥 Export Transactions CSV</button>
+    <button class="btn btn-red" onclick="clearAllData()" style="width:100%;">🗑 Clear All Data</button>
+    <div style="font-size:13px;color:var(--text3);margin-top:8px;text-align:center;">Export saves a backup. Clear removes everything permanently.</div>
+  </div>
+</div>
+</div>
+
+<!-- TAB BAR -->
+<nav class="tab-bar">
+  <button class="tab-btn mem-tab" onclick="switchTab('mem')"><span class="tab-icon">👥</span><span class="tab-label">Members</span></button>
+  <button class="tab-btn sum-tab active" onclick="switchTab('sum')"><span class="tab-icon">📊</span><span class="tab-label">Summary</span></button>
+  <button class="tab-btn adm-tab" onclick="requirePin('adm')"><span class="tab-icon">⚙️</span><span class="tab-label">Admin</span></button>
+</nav>
+
+<!-- PIN OVERLAY -->
+<div class="pin-overlay" id="pinOverlay" style="display:none;">
+  <div class="pin-box">
+    <div class="pin-title">🔒 Admin Access</div>
+    <div class="pin-sub">Enter your 4-digit PIN</div>
+    <input class="pin-input" type="password" id="pinInput" maxlength="4" inputmode="numeric" placeholder="••••">
+    <div class="pin-error" id="pinError"></div>
+    <div class="pin-btns">
+      <button class="btn btn-ghost" onclick="closePin()" style="flex:1">Cancel</button>
+      <button class="btn btn-gold" onclick="checkPin()" style="flex:1">Unlock</button>
+    </div>
+    <div style="margin-top:14px;"><a href="#" onclick="resetPin();return false;" style="font-size:12px;color:var(--text3);text-decoration:underline;">Forgot PIN?</a></div>
+  </div>
+</div>
+
+<script>
+// Firebase setup
+const firebaseConfig={
+  apiKey:"AIzaSyCXNhQx2yswq1Koro5AKpFIPrBu6wo8o28",
+  authDomain:"wcib-treasury.firebaseapp.com",
+  databaseURL:"https://wcib-treasury-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"wcib-treasury"
+};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const dataRef=db.ref('treasury_awes');
+
+const DEFAULT_PIN='1234';
+let txType='deposit', txFilter='all', pinTarget=null;
+let localState=null;
+
+function defaultState(){return{pin:DEFAULT_PIN,members:[],transactions:[]};}
+
+function getS(){
+  if(!localState)localState=defaultState();
+  if(!localState.members)localState=Object.assign(defaultState(),localState);
+  if(!Array.isArray(localState.transactions))localState.transactions=[];
+  if(!Array.isArray(localState.members))localState.members=[];
+  return localState;
+}
+
+function saveState(s){
+  localState=s;
+  dataRef.set(s).catch(function(e){console.error('Firebase save error:',e);});
+}
+
+function fmt(n){return'\u00a3'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function getInitials(n){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function currentMonth(){return new Date().toISOString().slice(0,7);}
+function monthLabel(ym){const[y,m]=ym.split('-');return new Date(parseInt(y),parseInt(m)-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});}
+
+function memberPaidThisMonth(name,txs,amt){
+  const cm=currentMonth();
+  const memberAmt=amt||0;
+  if(memberAmt<=0)return'paid';
+  const paid=txs.filter(t=>t.type==='deposit'&&t.member===name&&t.date.startsWith(cm)).reduce((a,t)=>a+t.amount,0);
+  if(paid>=memberAmt)return'paid';if(paid>0)return'partial';return'pending';
+}
+function memberTotal(name,txs){return txs.filter(t=>t.type==='deposit'&&t.member===name).reduce((a,t)=>a+t.amount,0);}
+
+function setType(t){
+  txType=t;
+  document.getElementById('typeDep').className='type-btn'+(t==='deposit'?' active-dep':'');
+  document.getElementById('typeWit').className='type-btn'+(t==='withdrawal'?' active-wit':'');
+  const c=document.getElementById('txCategory');
+  c.innerHTML=t==='withdrawal'
+    ?'<option value="Expense">Expense</option><option value="Event Cost">Event Cost</option><option value="Admin Cost">Admin Cost</option><option value="Other">Other</option>'
+    :'<option value="Monthly Contribution">Monthly Contribution</option><option value="Extra Contribution">Extra Contribution</option><option value="Event Payment">Event Payment</option><option value="Other">Other</option>';
+}
+
+function setFilter(f,el){txFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderTransactions();}
+
+function addTransaction(){
+  const s=getS(),member=document.getElementById('txMember').value,amount=parseFloat(document.getElementById('txAmount').value),
+    category=document.getElementById('txCategory').value,date=document.getElementById('txDate').value,notes=document.getElementById('txNotes').value.trim();
+  if(!member){alert('Please select a member.');return;}
+  if(!amount||amount<=0){alert('Please enter a valid amount.');return;}
+  if(!date){alert('Please select a date.');return;}
+  s.transactions.unshift({id:Date.now(),type:txType,member,amount,category,date,notes});
+  saveState(s);
+  document.getElementById('txAmount').value='';document.getElementById('txNotes').value='';
+  renderAll();
+}
+
+function deleteTransaction(id){if(!confirm('Delete this transaction?'))return;const s=getS();s.transactions=s.transactions.filter(t=>t.id!==id);saveState(s);renderAll();}
+
+function addMember(){
+  const name=document.getElementById('newMemberName').value.trim(),role=document.getElementById('newMemberRole').value;
+  const amt=parseFloat(document.getElementById('newMemberAmount').value)||0;
+  if(!name){alert('Please enter a name.');return;}
+  if(amt<=0){alert('Please enter a monthly contribution amount.');return;}
+  const s=getS();
+  if(s.members.find(m=>m.name.toLowerCase()===name.toLowerCase())){alert('Member already exists.');return;}
+  s.members.push({id:Date.now(),name,role,monthlyAmount:amt});saveState(s);document.getElementById('newMemberName').value='';document.getElementById('newMemberAmount').value='';renderAll();
+}
+
+function deleteMember(id){if(!confirm('Remove this member? Their transactions remain.'))return;const s=getS();s.members=s.members.filter(m=>m.id!==id);saveState(s);renderAll();}
+
+function saveSettings(){
+  const s=getS(),newPin=document.getElementById('newPin').value.trim(),newCode=document.getElementById('recoveryCode').value.trim();
+  var changed=[];
+  if(newPin.length===4&&/^\d+$/.test(newPin)){s.pin=newPin;document.getElementById('newPin').value='';changed.push('PIN');}
+  else if(newPin.length>0){alert('PIN must be exactly 4 digits.');return;}
+  if(newCode.length>0){s.recoveryCode=newCode;document.getElementById('recoveryCode').value='';changed.push('Recovery Code');}
+  if(changed.length>0){saveState(s);alert(changed.join(' & ')+' updated!');}
+  renderAll();
+}
+
+function clearAllData(){if(!confirm('Are you sure? This deletes ALL data permanently.'))return;localState=defaultState();dataRef.set(localState);renderAll();}
+
+function exportCSV(){
+  const s=getS(),txs=s.transactions||[];if(!txs.length){alert('No transactions to export.');return;}
+  let csv='Date,Type,Member,Category,Amount,Notes\n';
+  txs.forEach(t=>{csv+='"'+t.date+'","'+t.type+'","'+t.member+'","'+t.category+'",'+t.amount+',"'+(t.notes||'').replace(/"/g,'""')+'"\n';});
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='awes_treasury_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+function populateMemberDropdown(){
+  const s=getS(),sel=document.getElementById('txMember'),cur=sel.value;
+  sel.innerHTML='<option value="">— Select —</option>';
+  s.members.forEach(m=>{const o=document.createElement('option');o.value=m.name;o.textContent=m.name+(m.role!=='Member'?' ('+m.role+')':'');sel.appendChild(o);});
+  sel.value=cur;
+}
+
+function renderTransactions(){
+  const s=getS(),list=document.getElementById('txList');
+  let txs=s.transactions||[];
+  if(txFilter==='deposit')txs=txs.filter(t=>t.type==='deposit');
+  else if(txFilter==='withdrawal')txs=txs.filter(t=>t.type==='withdrawal');
+  else if(txFilter!=='all')txs=txs.filter(t=>t.category===txFilter);
+  if(!txs.length){list.innerHTML='<div class="empty-state">No transactions yet.<br>Add your first one above.</div>';return;}
+  list.innerHTML=txs.map(t=>'<div class="tx-item"><div class="tx-icon '+(t.type==='deposit'?'dep':'wit')+'">'+(t.type==='deposit'?'\u2B06':'\u2B07')+'</div><div class="tx-body"><div class="tx-name">'+t.member+'<span class="tag '+((t.category==='Monthly Contribution'||t.category==='Extra Contribution')?'tag-contrib':'tag-expense')+'">'+t.category+'</span></div><div class="tx-meta">'+new Date(t.date).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+(t.notes?' \u00b7 '+t.notes:'')+'</div></div><div class="tx-amount '+(t.type==='deposit'?'dep':'wit')+'">'+(t.type==='deposit'?'+':'-')+fmt(t.amount)+'</div><button class="tx-del" onclick="deleteTransaction('+t.id+')">\u2715</button></div>').join('');
+}
+
+function renderMembers(){
+  const s=getS(),cm=currentMonth();
+  document.getElementById('currentMonthLabel').textContent=monthLabel(cm);
+  const paid=s.members.filter(m=>memberPaidThisMonth(m.name,s.transactions,m.monthlyAmount||0)==='paid').length;
+  const partial=s.members.filter(m=>memberPaidThisMonth(m.name,s.transactions,m.monthlyAmount||0)==='partial').length;
+  const pending=s.members.filter(m=>memberPaidThisMonth(m.name,s.transactions,m.monthlyAmount||0)==='pending').length;
+  document.getElementById('memberStats').innerHTML='<div class="metric m-green"><div class="metric-label">Paid</div><div class="metric-value good">'+paid+'</div></div><div class="metric m-amber"><div class="metric-label">Partial</div><div class="metric-value warn">'+partial+'</div></div><div class="metric m-red"><div class="metric-label">Pending</div><div class="metric-value bad">'+pending+'</div></div>';
+  const list=document.getElementById('memberList');
+  if(!s.members.length){list.innerHTML='<div class="empty-state">No members yet. Add them in Admin.</div>';return;}
+  list.innerHTML=s.members.map(m=>{
+    const mAmt=m.monthlyAmount||0;
+    const status=memberPaidThisMonth(m.name,s.transactions,mAmt),total=memberTotal(m.name,s.transactions);
+    const pc=status==='paid'?'pill-paid':status==='partial'?'pill-pending':'pill-overdue';
+    const pl=status==='paid'?'\u2713 Paid':status==='partial'?'~ Partial':'\u2717 Pending';
+    return'<div class="member-card"><div class="member-avatar">'+getInitials(m.name)+'</div><div class="member-body"><div class="member-name">'+m.name+' <span style="font-size:12px;color:var(--text3)">'+m.role+'</span></div><div class="member-total">Monthly: '+fmt(mAmt)+' \u00b7 Total contributed: '+fmt(total)+'</div></div><span class="member-month-pill '+pc+'">'+pl+'</span></div>';
+  }).join('');
+}
+
+function renderSummary(){
+  const s=getS(),txs=s.transactions||[];
+  const income=txs.filter(t=>t.type==='deposit').reduce((a,t)=>a+t.amount,0);
+  const expenses=txs.filter(t=>t.type==='withdrawal').reduce((a,t)=>a+t.amount,0);
+  const balance=income-expenses;
+  document.getElementById('sumBalance').textContent=fmt(balance);
+  document.getElementById('sumTarget').textContent=fmt(s.members.reduce(function(a,m){return a+(m.monthlyAmount||0);},0));
+  document.getElementById('sumIncome').textContent=fmt(income);
+  document.getElementById('sumExpenses').textContent=fmt(expenses);
+  document.getElementById('sumMembers').textContent=s.members.length;
+  document.getElementById('liveBalance').textContent=fmt(balance);
+
+  const months={};txs.forEach(t=>{const ym=t.date.slice(0,7);if(!months[ym])months[ym]={income:0,expenses:0};if(t.type==='deposit')months[ym].income+=t.amount;else months[ym].expenses+=t.amount;});
+  const sorted=Object.keys(months).sort().reverse();
+  const mb=document.getElementById('monthBreakdown');
+  if(!sorted.length){mb.innerHTML='<div class="empty-state">No data yet.</div>';}
+  else{mb.innerHTML=sorted.map(ym=>{const d=months[ym],net=d.income-d.expenses,pct=income>0?Math.round((d.income/income)*100):0;
+    return'<div class="card" style="margin-bottom:10px;padding:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-size:15px;font-weight:700;color:var(--gold);">'+monthLabel(ym)+'</div><div style="font-size:14px;color:'+(net>=0?'var(--green)':'var(--red)')+';">'+(net>=0?'+':'')+fmt(net)+'</div></div><div style="display:flex;gap:10px;"><div style="flex:1;"><div style="font-size:12px;color:var(--text2);margin-bottom:3px;">INCOME</div><div style="font-size:16px;font-weight:700;color:var(--green);">+'+fmt(d.income)+'</div></div><div style="flex:1;"><div style="font-size:12px;color:var(--text2);margin-bottom:3px;">EXPENSES</div><div style="font-size:16px;font-weight:700;color:var(--red);">-'+fmt(d.expenses)+'</div></div></div><div class="bar-bg" style="margin-top:10px;"><div class="bar-fill bar-green" style="width:'+pct+'%"></div></div></div>';}).join('');}
+
+  const contribs={};txs.filter(t=>t.type==='deposit').forEach(t=>{contribs[t.member]=(contribs[t.member]||0)+t.amount;});
+  const top=Object.entries(contribs).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const tc=document.getElementById('topContributors');
+  if(!top.length){tc.innerHTML='<div class="empty-state">No contributions yet.</div>';}
+  else{const max=top[0][1];tc.innerHTML=top.map(([name,amt],i)=>{const pct=Math.round((amt/max)*100);const medal=i===0?'\uD83E\uDD47':i===1?'\uD83E\uDD48':i===2?'\uD83E\uDD49':'  ';
+    return'<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:15px;color:var(--text);">'+medal+' '+name+'</span><span style="font-size:15px;font-weight:700;color:var(--green);">'+fmt(amt)+'</span></div><div class="bar-bg"><div class="bar-fill bar-green" style="width:'+pct+'%"></div></div></div>';}).join('');}
+}
+
+function renderAdmin(){
+  const s=getS();
+  const list=document.getElementById('adminMemberList');
+  if(!s.members.length){list.innerHTML='<div class="empty-state">No members yet.</div>';return;}
+  list.innerHTML=s.members.map(m=>'<div class="member-card" id="mc-'+m.id+'"><div class="member-avatar">'+getInitials(m.name)+'</div><div class="member-body"><div class="member-name">'+m.name+'</div><div class="member-total">'+m.role+' \u00b7 Monthly: \u00a3'+(m.monthlyAmount||0).toFixed(2)+'</div></div><div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-sm" onclick="editMember('+m.id+')">Edit</button><button class="btn btn-red btn-sm" onclick="deleteMember('+m.id+')">Remove</button></div></div>').join('');
+}
+
+function editMember(id){
+  const s=getS(),m=s.members.find(x=>x.id===id);
+  if(!m)return;
+  var el=document.getElementById('mc-'+id);
+  if(!el)return;
+  el.outerHTML='<div class="edit-form" id="ef-'+id+'"><div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:12px;">Edit Member</div><div class="field-row"><div class="field"><label>Name</label><input type="text" id="en-'+id+'" value="'+m.name+'"></div><div class="field"><label>Role</label><select id="er-'+id+'"><option value="Member"'+(m.role==='Member'?' selected':'')+'>Member</option><option value="Admin"'+(m.role==='Admin'?' selected':'')+'>Admin</option><option value="Treasurer"'+(m.role==='Treasurer'?' selected':'')+'>Treasurer</option></select></div></div><div class="field"><label>Monthly Contribution (\u00a3)</label><input type="number" id="ea-'+id+'" value="'+(m.monthlyAmount||0)+'" min="0" step="0.01" inputmode="decimal"></div><div class="edit-btns"><button class="btn btn-ghost" onclick="renderAdmin()">Cancel</button><button class="btn btn-gold" onclick="saveMemberEdit('+id+')">Save</button></div></div>';
+}
+
+function saveMemberEdit(id){
+  var s=getS(),m=s.members.find(x=>x.id===id);
+  if(!m)return;
+  var newName=document.getElementById('en-'+id).value.trim();
+  var newRole=document.getElementById('er-'+id).value;
+  var newAmt=parseFloat(document.getElementById('ea-'+id).value)||0;
+  if(!newName){alert('Name cannot be empty.');return;}
+  var oldName=m.name;
+  if(newName.toLowerCase()!==oldName.toLowerCase()&&s.members.find(x=>x.id!==id&&x.name.toLowerCase()===newName.toLowerCase())){alert('A member with that name already exists.');return;}
+  if(newName!==oldName){s.transactions.forEach(function(t){if(t.member===oldName)t.member=newName;});}
+  m.name=newName;
+  m.role=newRole;
+  m.monthlyAmount=newAmt;
+  saveState(s);
+  renderAll();
+}
+
+function renderAll(){populateMemberDropdown();renderTransactions();renderMembers();renderSummary();renderAdmin();}
+
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.querySelector('.tab-btn.'+tab+'-tab').classList.add('active');
+  const subs={mem:'Members',sum:'Summary',adm:'Admin'};
+  const subCls={mem:'mem-sub',sum:'sum-sub',adm:'adm-sub'};
+  document.getElementById('logoSub').textContent=subs[tab];
+  document.getElementById('logoSub').className='logo-sub '+subCls[tab];
+}
+
+function requirePin(tab){pinTarget=tab;document.getElementById('pinInput').value='';document.getElementById('pinError').textContent='';document.getElementById('pinOverlay').style.display='flex';setTimeout(()=>document.getElementById('pinInput').focus(),100);}
+function closePin(){document.getElementById('pinOverlay').style.display='none';pinTarget=null;}
+function checkPin(){const s=getS(),entered=document.getElementById('pinInput').value;if(entered===(s.pin||DEFAULT_PIN)){var t=pinTarget;closePin();switchTab(t);}else{document.getElementById('pinError').textContent='Incorrect PIN. Try again.';document.getElementById('pinInput').value='';}}
+document.getElementById('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkPin();});
+
+function resetPin(){
+  var s=getS();
+  if(s.recoveryCode){
+    var answer=prompt('Enter your recovery code to reset the PIN:');
+    if(!answer)return;
+    if(answer.trim()===s.recoveryCode){
+      s.pin=DEFAULT_PIN;saveState(s);
+      document.getElementById('pinError').textContent='';
+      document.getElementById('pinInput').value='';
+      alert('PIN has been reset to 1234. Log in and change it immediately.');
+    }else{alert('Incorrect recovery code.');}
+  }else{
+    var answer=prompt('No recovery code set.\nTo reset, type: AWES RESET');
+    if(answer&&answer.trim().toUpperCase()==='AWES RESET'){
+      s.pin=DEFAULT_PIN;saveState(s);
+      document.getElementById('pinError').textContent='';
+      document.getElementById('pinInput').value='';
+      alert('PIN has been reset to 1234.\nPlease set a recovery code in Settings immediately!');
+    }else if(answer){alert('Incorrect. Type exactly: AWES RESET');}
+  }
+}
+
+document.getElementById('txDate').value=new Date().toISOString().split('T')[0];
+
+// Load data from Firebase and listen for changes
+dataRef.on('value',function(snapshot){
+  var data=snapshot.val();
+  if(data){
+    localState=data;
+    if(!Array.isArray(localState.transactions))localState.transactions=[];
+    if(!Array.isArray(localState.members))localState.members=[];
+  }else{
+    localState=defaultState();
+  }
+  renderAll();
+});
+</script>
+</body>
+</html>
